@@ -5,12 +5,16 @@ public class Cliente {
     private int id;
     private String nome;
     private String cpf;
+    private String endereço;
+    private String numeroCelular;
     private double saldoDevedor;
 
-    public Cliente(String nome, String cpf) {
+    public Cliente(String nome, String cpf, String endereço, String numeroCelular) {
         this.id = contadorID++;
         this.nome = nome;
         this.cpf = cpf;
+        this.endereço = endereço;
+        this.numeroCelular = numeroCelular;
         this.saldoDevedor = 0.0;
     }
 
@@ -24,6 +28,14 @@ public class Cliente {
 
     public String getCpf() {
         return cpf;
+    }
+
+    public String getEndereço() {
+        return endereço;
+    }
+
+    public String getNumeroCelular() {
+        return numeroCelular;
     }
 
     public double getSaldoDevedor() {

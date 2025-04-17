@@ -12,7 +12,6 @@ public class Estabelecimento {
     private Map<Integer, List<HistoricoTransação>> historicoCliente = new HashMap<>();
 
     public class HistoricoTransação {
-
         private String tipo;
         private double valor;
         private LocalDateTime dataHora;
@@ -30,19 +29,28 @@ public class Estabelecimento {
         }
     }
 
-    public void adicionarCliente(String nome, String cpf) {
-        String cpfFormatado = getString(nome, cpf);
+    public void adicionarCliente(String nome, String cpf, String endereco, String numeroCelular) {
+        if (nome == null || nome.trim().isEmpty()) {
+            throw new Excecao("ERRO - Nome não pode ser vazio!");
+        }
 
-        for (Cliente cliente : dbClientes.values()) {
-            if (cliente.getCpf().equals(cpfFormatado)) {
-                throw new Excecao("ERRO - Já existe um cliente com este CPF!");
+        if (endereco == null) endereco = "";
+        if (numeroCelular == null) numeroCelular = "";
+
+        String cpfFormatado = formataCPF(cpf);
+        if (cpfFormatado != null) {
+            for (Cliente cliente : dbClientes.values()) {
+                if (cpfFormatado.equals(cliente.getCpf())) {
+                    throw new Excecao("ERRO - Já existe um cliente com este CPF!");
+                }
             }
         }
 
-        Cliente cliente = new Cliente(nome.trim(), cpfFormatado);
+        Cliente cliente = new Cliente(nome.trim(), cpfFormatado, endereco, numeroCelular);
         dbClientes.put(cliente.getId(), cliente);
         System.out.println("--- Cliente " + cliente.getNome() + " adicionado com sucesso (ID = " + cliente.getId() + ") ---");
     }
+
 
     public void adicionarCompraFiado(int id, double valor) {
         Cliente cliente = dbClientes.get(id);
@@ -70,17 +78,16 @@ public class Estabelecimento {
         if (dbClientes.isEmpty()) {
             throw new Excecao("ERRO - Usuários não cadastrados");
         } else {
-            dbClientes.forEach((id, cliente) ->
-                    System.out.println("-=- ID: " + id + " | Nome: " + cliente.getNome() + " | CPF: " + cliente.getCpf() + " | Saldo devedor: " + cliente.getSaldoDevedor() + " -=-"));
+            dbClientes.forEach((id, cliente) -> System.out.println("-=- ID: " + id + " | Nome: " + cliente.getNome() + " | CPF: " + cliente.getCpf() + " | Endereço: " +  cliente.getEndereço() + " | Telefone: " + cliente.getNumeroCelular() + " | Saldo Devedor: " + String.format("%.2f", cliente.getSaldoDevedor() + " -=-")));
         }
     }
 
-    public void consultaSaldo(int id) {
+    public void consultaCliente(int id) {
         if (dbClientes.isEmpty()) {
             throw new Excecao("ERRO - Usuário não encontrado");
         } else {
             Cliente cliente = dbClientes.get(id);
-            System.out.println(cliente.getNome() + " ainda deve R$ " + cliente.getSaldoDevedor());
+            System.out.println(("-=- ID: " + id + " | Nome: " + cliente.getNome() + " | CPF: " + cliente.getCpf() + " | Endereço: " +  cliente.getEndereço() + " | Telefone: " + cliente.getNumeroCelular() + " | Saldo devedor: " + String.format("%.2f",cliente.getSaldoDevedor() + " -=-")));
         }
     }
 
@@ -106,25 +113,21 @@ public class Estabelecimento {
     }
 
 
-    private static String getString(String nome, String cpf) {
-        if (nome == null || nome.trim().isEmpty()) {
-            throw new Excecao("ERRO - Nome não pode ser vazio!");
-        }
+    private static String formataCPF(String cpf) {
+        if (cpf == null || cpf.isEmpty()) {
+            return "";
+        } else {
+            String cpfLimpo = cpf.replaceAll("[^0-9]", ""); // Remove tudo que não é dígito
+            if (!cpfLimpo.matches("\\d{11}")) {
+                throw new Excecao("ERRO - CPF deve conter exatamente 11 dígitos!");
+            }
 
-        if (cpf == null) {
-            throw new Excecao("ERRO - CPF não pode ser vazio!");
+            String cpfFormatado = String.format("%s.%s.%s-%s",
+                    cpfLimpo.substring(0, 3),
+                    cpfLimpo.substring(3, 6),
+                    cpfLimpo.substring(6, 9),
+                    cpfLimpo.substring(9, 11));
+            return cpfFormatado;
         }
-
-        String cpfLimpo = cpf.replaceAll("[^0-9]", ""); // Remove tudo que não é dígito
-        if (!cpfLimpo.matches("\\d{11}")) {
-            throw new Excecao("ERRO - CPF deve conter exatamente 11 dígitos!");
-        }
-
-        String cpfFormatado = String.format("%s.%s.%s-%s",
-                cpfLimpo.substring(0, 3),
-                cpfLimpo.substring(3, 6),
-                cpfLimpo.substring(6, 9),
-                cpfLimpo.substring(9, 11));
-        return cpfFormatado;
     }
 }
