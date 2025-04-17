@@ -42,6 +42,18 @@ public class Cliente {
         return saldoDevedor;
     }
 
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
+    }
+
+    public void setEndereço(String endereço) {
+        this.endereço = endereço;
+    }
+
+    public void setNumeroCelular(String numeroCelular) {
+        this.numeroCelular = numeroCelular;
+    }
+
     public void adicionarCompraFiado(double valor) {
         if (valor < 0) {
             throw new Excecao("ERRO - Impossível adicionar valor negativo");

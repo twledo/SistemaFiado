@@ -25,7 +25,7 @@ public class Estabelecimento {
         @Override
         public String toString() {
             DateTimeFormatter formatador = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-            return tipo + " de R$" + valor + " em " + dataHora.format(formatador);
+            return tipo + " de R$" + String.format("%.2f", valor) + " em " + dataHora.format(formatador);
         }
     }
 
@@ -78,17 +78,30 @@ public class Estabelecimento {
         if (dbClientes.isEmpty()) {
             throw new Excecao("ERRO - Usuários não cadastrados");
         } else {
-            dbClientes.forEach((id, cliente) -> System.out.println("-=- ID: " + id + " | Nome: " + cliente.getNome() + " | CPF: " + cliente.getCpf() + " | Endereço: " +  cliente.getEndereço() + " | Telefone: " + cliente.getNumeroCelular() + " | Saldo Devedor: " + String.format("%.2f", cliente.getSaldoDevedor() + " -=-")));
+            dbClientes.forEach((id, cliente) -> System.out.println(
+                    "-=- ID: " + id +
+                            " | Nome: " + cliente.getNome() +
+                            " | CPF: " + cliente.getCpf() +
+                            " | Endereço: " + cliente.getEndereço() +
+                            " | Telefone: " + cliente.getNumeroCelular() +
+                            " | Saldo devedor: " + String.format("%.2f", cliente.getSaldoDevedor()) + " -=-"
+            ));
         }
     }
 
     public void consultaCliente(int id) {
-        if (dbClientes.isEmpty()) {
-            throw new Excecao("ERRO - Usuário não encontrado");
-        } else {
-            Cliente cliente = dbClientes.get(id);
-            System.out.println(("-=- ID: " + id + " | Nome: " + cliente.getNome() + " | CPF: " + cliente.getCpf() + " | Endereço: " +  cliente.getEndereço() + " | Telefone: " + cliente.getNumeroCelular() + " | Saldo devedor: " + String.format("%.2f",cliente.getSaldoDevedor() + " -=-")));
+        Cliente cliente = dbClientes.get(id);
+        if (cliente == null) {
+            throw new Excecao("ERRO - Usuário não encontrado para ID: " + id);
         }
+        System.out.println(
+                "-=- ID: " + id +
+                        " | Nome: " + cliente.getNome() +
+                        " | CPF: " + cliente.getCpf() +
+                        " | Endereço: " + cliente.getEndereço() +
+                        " | Telefone: " + cliente.getNumeroCelular() +
+                        " | Saldo devedor: " + String.format("%.2f", cliente.getSaldoDevedor()) + " -=-"
+        );
     }
 
     private void registrarHistorico(int id, String tipo, double valor) {
@@ -98,7 +111,7 @@ public class Estabelecimento {
     public void mostrarHistorico(int id) {
         Cliente cliente = dbClientes.get(id);
         if (cliente == null) {
-            throw new Excecao("ERRO - Cliente não encontrado para ID: " + dbClientes.get(id));
+            throw new Excecao("ERRO - Cliente não encontrado para ID: " + id);
         }
 
         List<HistoricoTransação> historico = historicoCliente.get(id);
@@ -110,6 +123,42 @@ public class Estabelecimento {
         for (HistoricoTransação transação : historico) {
             System.out.println(" - " + transação);
         }
+    }
+
+    public void atualizarCPF(int id, String novoCPF) {
+        Cliente cliente = dbClientes.get(id);
+        if (cliente == null) {
+            throw new Excecao("ERRO - Cliente não encontrado para ID: " + dbClientes.get(id));
+        }
+
+        String cpfFormatado_Atualizado = formataCPF(novoCPF);
+        for (Cliente c : dbClientes.values()) {
+            if (cpfFormatado_Atualizado.equals(c.getCpf()) && c.getId() != id) {
+                throw new Excecao("ERRO - Já existe um cliente com este CPF!");            }
+        }
+
+        cliente.setCpf(cpfFormatado_Atualizado);
+        System.out.println("--- CPF do cliente " + cliente.getNome() + " atualizado para " + cpfFormatado_Atualizado + " ---");
+    }
+
+    public void atualizarTelefone (int id, String novoNumero) {
+        Cliente cliente = dbClientes.get(id);
+        if (cliente == null) {
+            throw new Excecao("ERRO - Cliente não encontrado para ID: " + id);
+        }
+
+        cliente.setNumeroCelular(novoNumero);
+        System.out.println("--- Número de celular do cliente " + cliente.getNome() + " atualizado para " + novoNumero + " ---");
+    }
+
+    public void atualizarEndereço(int id, String novoEndereço) {
+        Cliente cliente = dbClientes.get(id);
+        if (cliente == null) {
+            throw new Excecao("ERRO - Cliente não encontrado para ID: " + id);
+        }
+
+        cliente.setEndereço(novoEndereço);
+        System.out.println("--- Endereço do cliente " + cliente.getNome() + " atualizado para " + novoEndereço + " ---");
     }
 
 
