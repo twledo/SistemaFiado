@@ -14,18 +14,20 @@ public class Estabelecimento {
     public class HistoricoTransação {
         private String tipo;
         private double valor;
+        private String descricao;
         private LocalDateTime dataHora;
 
-        public HistoricoTransação(String tipo, double valor) {
+        public HistoricoTransação(String tipo, double valor, String descricao) {
             this.tipo = tipo;
             this.valor = valor;
+            this.descricao = descricao;
             this.dataHora = LocalDateTime.now();
         }
 
         @Override
         public String toString() {
             DateTimeFormatter formatador = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-            return tipo + " de R$" + String.format("%.2f", valor) + " em " + dataHora.format(formatador);
+            return tipo + " de R$" + String.format("%.2f", valor) + " (" + descricao + ") em " + dataHora.format(formatador);
         }
     }
 
@@ -52,7 +54,7 @@ public class Estabelecimento {
     }
 
 
-    public void adicionarCompraFiado(int id, double valor) {
+    public void adicionarCompraFiado(int id, double valor, String descricao) {
         Cliente cliente = dbClientes.get(id);
         if (cliente == null) {
             throw new Excecao("ERRO - Cliente não encontrado!");
@@ -60,18 +62,18 @@ public class Estabelecimento {
         if (valor < 0) {
             throw new Excecao("ERRO - Impossível adicionar valor negativo");
         }
-        cliente.adicionarCompraFiado(valor);
-        registrarHistorico(id, "Compra fiado", valor);
+        cliente.adicionarCompraFiado(valor, descricao);
+        registrarHistorico(id, "Compra fiado", valor, descricao);
     }
 
 
-    public void pagarFiado(int id, double valor) {
+    public void pagarFiado(int id, double valor, String descricao) {
         Cliente cliente = dbClientes.get(id);
         if (cliente == null) {
             throw new Excecao("ERRO - Usuário não encontrado");
         }
-        cliente.pagarFiado(valor);
-        registrarHistorico(id, "Pagamento", valor);
+        cliente.pagarFiado(valor, descricao);
+        registrarHistorico(id, "Pagamento", valor, descricao);
     }
 
     public void listarClientes() {
@@ -104,8 +106,8 @@ public class Estabelecimento {
         );
     }
 
-    private void registrarHistorico(int id, String tipo, double valor) {
-        historicoCliente.computeIfAbsent(id, k -> new ArrayList<>()).add(new HistoricoTransação(tipo, valor));
+    private void registrarHistorico(int id, String tipo, double valor, String descricao) {
+        historicoCliente.computeIfAbsent(id, k -> new ArrayList<>()).add(new HistoricoTransação(tipo, valor, descricao));
     }
 
     public void mostrarHistorico(int id) {
@@ -128,7 +130,7 @@ public class Estabelecimento {
     public void atualizarCPF(int id, String novoCPF) {
         Cliente cliente = dbClientes.get(id);
         if (cliente == null) {
-            throw new Excecao("ERRO - Cliente não encontrado para ID: " + dbClientes.get(id));
+            throw new Excecao("ERRO - Cliente não encontrado para ID: " + id);
         }
 
         String cpfFormatado_Atualizado = formataCPF(novoCPF);
@@ -160,7 +162,6 @@ public class Estabelecimento {
         cliente.setEndereço(novoEndereço);
         System.out.println("--- Endereço do cliente " + cliente.getNome() + " atualizado para " + novoEndereço + " ---");
     }
-
 
     private static String formataCPF(String cpf) {
         if (cpf == null || cpf.isEmpty()) {

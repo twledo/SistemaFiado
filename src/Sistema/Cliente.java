@@ -7,6 +7,7 @@ public class Cliente {
     private String cpf;
     private String endereço;
     private String numeroCelular;
+    private String descricao;
     private double saldoDevedor;
 
     public Cliente(String nome, String cpf, String endereço, String numeroCelular) {
@@ -16,6 +17,7 @@ public class Cliente {
         this.endereço = endereço;
         this.numeroCelular = numeroCelular;
         this.saldoDevedor = 0.0;
+        this.descricao = "";
     }
 
     public int getId() {
@@ -54,15 +56,23 @@ public class Cliente {
         this.numeroCelular = numeroCelular;
     }
 
-    public void adicionarCompraFiado(double valor) {
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
+
+    public void adicionarCompraFiado(double valor, String descricao) {
         if (valor < 0) {
             throw new Excecao("ERRO - Impossível adicionar valor negativo");
         }
         this.saldoDevedor += valor;
-        System.out.println("--- Compra fiada de R$" + valor + " registrada para " + this.nome + " ---");
+        System.out.println("--- Compra fiada de R$" + valor + " (" + descricao + ") registrada para " + this.nome + " ---");
     }
 
-    public void pagarFiado(double valor) {
+    public void pagarFiado(double valor, String descricao) {
         if (valor < 0) {
             throw new Excecao("ERRO - Impossível adicionar valor negativo");
         }
@@ -72,6 +82,6 @@ public class Cliente {
         }
 
         this.saldoDevedor -= valor;
-        System.out.println("--- Pago R$" + valor + " de fiado no nome de " + this.nome + " ---");
+        System.out.println("--- Pagando R$" + valor + " (" + descricao + ") de fiado no nome de " + this.nome + " ---");
     }
 }
