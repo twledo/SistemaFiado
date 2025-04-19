@@ -40,7 +40,7 @@ public class Estabelecimento {
         if (numeroCelular == null) numeroCelular = "";
 
         String cpfFormatado = formataCPF(cpf);
-        if (cpfFormatado != null) {
+        if (cpfFormatado != null && !cpfFormatado.isEmpty()) {
             for (Cliente cliente : dbClientes.values()) {
                 if (cpfFormatado.equals(cliente.getCpf())) {
                     throw new Excecao("ERRO - Já existe um cliente com este CPF!");
@@ -50,7 +50,7 @@ public class Estabelecimento {
 
         Cliente cliente = new Cliente(nome.trim(), cpfFormatado, endereco, numeroCelular);
         dbClientes.put(cliente.getId(), cliente);
-        System.out.println("--- Cliente " + cliente.getNome() + " adicionado com sucesso (ID = " + cliente.getId() + ") ---");
+    System.out.println("--- Cliente \"" + cliente.getNome() + "\" adicionado com sucesso (ID = " + cliente.getId() + ") ---");
     }
 
 
@@ -121,7 +121,7 @@ public class Estabelecimento {
             throw new Excecao("Nenhum transação registrada para " + cliente.getNome());
         }
 
-        System.out.println("Historico de transação para " + cliente.getNome() + ":");
+        System.out.println("Historico de transação para \"" + cliente.getNome() + "\":");
         for (HistoricoTransação transação : historico) {
             System.out.println(" - " + transação);
         }
@@ -140,7 +140,7 @@ public class Estabelecimento {
         }
 
         cliente.setCpf(cpfFormatado_Atualizado);
-        System.out.println("--- CPF do cliente " + cliente.getNome() + " atualizado para " + cpfFormatado_Atualizado + " ---");
+System.out.println("--- CPF do cliente \"" + cliente.getNome() + "\" atualizado para \"" + cpfFormatado_Atualizado + "\" ---");
     }
 
     public void atualizarTelefone (int id, String novoNumero) {
@@ -150,7 +150,7 @@ public class Estabelecimento {
         }
 
         cliente.setNumeroCelular(novoNumero);
-        System.out.println("--- Número de celular do cliente " + cliente.getNome() + " atualizado para " + novoNumero + " ---");
+        System.out.println("--- Número de celular do cliente \"" + cliente.getNome() + "\" atualizado para \"" + novoNumero + "\" ---");
     }
 
     public void atualizarEndereço(int id, String novoEndereço) {
@@ -160,7 +160,7 @@ public class Estabelecimento {
         }
 
         cliente.setEndereço(novoEndereço);
-        System.out.println("--- Endereço do cliente " + cliente.getNome() + " atualizado para " + novoEndereço + " ---");
+        System.out.println("--- Endereço do cliente \"" + cliente.getNome() + "\" atualizado para \"" + novoEndereço + "\" ---");
     }
 
     private static String formataCPF(String cpf) {
